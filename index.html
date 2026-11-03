@@ -1,149 +1,996 @@
+```html
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>八榮八恥｜個人學習筆記</title>
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>莹莹姐，生日快乐！🎂✨</title>
   <style>
-    body {
+    * {
       margin: 0;
-      font-family: "PingFang TC", "Microsoft JhengHei", "Noto Sans TC", sans-serif;
-      background-color: #f7f7f7;
-      color: #222;
-      line-height: 1.8;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: radial-gradient(circle at 50% 40%, #1c0a30 0%, #0e051a 55%, #04010a 100%);
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+      color: #fff;
     }
 
-    header {
-      background-color: #ffffff;
-      border-bottom: 1px solid #e5e5e5;
-      padding: 24px 16px;
+    /* 主画布 */
+    #cakeCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      display: block;
+    }
+
+    /* 顶部标题与祝福标语 */
+    .header-area {
+      position: absolute;
+      top: env(safe-area-inset-top, 16px);
+      left: 0;
+      right: 0;
+      padding: 14px 16px;
       text-align: center;
+      z-index: 10;
+      pointer-events: none;
     }
-
-    header h1 {
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 14px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(251, 191, 36, 0.35);
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: #fde68a;
+      text-transform: uppercase;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      margin-bottom: 6px;
+      box-shadow: 0 0 15px rgba(251, 191, 36, 0.15);
+    }
+    .main-title {
+      font-size: clamp(1.6rem, 5.5vw, 2.6rem);
+      font-weight: 700;
+      letter-spacing: 2px;
+      background: linear-gradient(135deg, #fff7ed 0%, #fecdd3 40%, #fde047 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 25px rgba(251, 113, 133, 0.45);
       margin: 0;
-      font-size: 24px;
-      font-weight: 600;
+    }
+    .sub-title {
+      font-size: clamp(0.75rem, 2.8vw, 0.95rem);
+      color: rgba(254, 205, 211, 0.85);
+      margin-top: 4px;
+      letter-spacing: 1.5px;
+      font-weight: 300;
+    }
+    .touch-hint {
+      display: inline-block;
+      margin-top: 6px;
+      font-size: 11px;
+      color: rgba(253, 230, 138, 0.65);
+      background: rgba(0, 0, 0, 0.25);
+      padding: 2px 10px;
+      border-radius: 12px;
     }
 
-    header p {
-      margin-top: 8px;
-      font-size: 14px;
-      color: #666;
+    /* 底部控制台操作栏 */
+    .controls-bar {
+      position: absolute;
+      bottom: calc(env(safe-area-inset-bottom, 14px) + 12px);
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      display: flex;
+      gap: 8px;
+      max-width: 94vw;
+      padding: 8px 12px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 28px;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45), inset 0 0 10px rgba(255, 255, 255, 0.05);
     }
-
-    main {
-      max-width: 800px;
-      margin: 32px auto;
-      padding: 0 16px;
-    }
-
-    section {
-      background: #ffffff;
-      padding: 24px;
-      margin-bottom: 24px;
-      border-radius: 6px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-    }
-
-    section h2 {
-      font-size: 20px;
-      margin-bottom: 16px;
-      border-left: 4px solid #999;
-      padding-left: 12px;
-    }
-
-    ul {
-      padding-left: 20px;
-    }
-
-    li {
-      margin-bottom: 10px;
-    }
-
-    .disclaimer {
-      font-size: 14px;
-      color: #555;
-      background: #fafafa;
-      border-left: 4px solid #ccc;
-      padding: 16px;
-    }
-
-    footer {
-      text-align: center;
+    .ctrl-btn {
+      appearance: none;
+      border: none;
+      outline: none;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.05));
+      border: 1px solid rgba(254, 205, 211, 0.3);
+      color: #fff;
+      padding: 8px 14px;
+      border-radius: 20px;
       font-size: 13px;
-      color: #888;
-      padding: 24px 16px 40px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: transform 0.15s ease, background 0.25s, box-shadow 0.25s;
+    }
+    .ctrl-btn:active {
+      transform: scale(0.92);
+      background: rgba(244, 63, 94, 0.35);
+    }
+    .ctrl-btn.active {
+      background: linear-gradient(135deg, rgba(244, 63, 94, 0.5), rgba(251, 146, 60, 0.5));
+      border-color: rgba(253, 230, 138, 0.8);
+      box-shadow: 0 0 12px rgba(251, 146, 60, 0.4);
+    }
+
+    /* 祝福卡片 Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s ease;
+    }
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .modal-card {
+      width: 100%;
+      max-width: 380px;
+      background: linear-gradient(165deg, rgba(45, 17, 72, 0.92), rgba(20, 8, 35, 0.96));
+      border: 1px solid rgba(251, 191, 36, 0.45);
+      border-radius: 24px;
+      padding: 26px 22px;
+      box-shadow: 0 16px 45px rgba(0, 0, 0, 0.7), inset 0 0 20px rgba(251, 191, 36, 0.1);
+      transform: translateY(20px) scale(0.95);
+      transition: transform 0.35s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+      text-align: center;
+    }
+    .modal-overlay.open .modal-card {
+      transform: translateY(0) scale(1);
+    }
+    .card-tag {
+      font-size: 11px;
+      color: #fde047;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .card-title {
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: #ffe4e6;
+      margin-bottom: 16px;
+    }
+    .card-body {
+      font-size: 0.95rem;
+      line-height: 1.8;
+      color: #f3e8ff;
+      text-align: left;
+      font-weight: 300;
+      margin-bottom: 22px;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 14px 16px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .card-body p + p {
+      margin-top: 10px;
+    }
+    .btn-close {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #f43f5e, #fb923c);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(244, 63, 94, 0.4);
+      transition: transform 0.15s;
+    }
+    .btn-close:active {
+      transform: scale(0.96);
+    }
+
+    /* 浮动提示 */
+    .toast {
+      position: fixed;
+      top: 120px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-10px);
+      background: rgba(18, 7, 30, 0.88);
+      border: 1px solid rgba(251, 191, 36, 0.4);
+      color: #fde68a;
+      padding: 8px 18px;
+      border-radius: 20px;
+      font-size: 13px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s, transform 0.3s;
+      z-index: 60;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
     }
   </style>
 </head>
-
 <body>
 
-  <header>
-    <h1>八榮八恥｜個人學習筆記</h1>
-    <p>價值觀整理 · 思想摘錄 · 個人理解記錄</p>
-  </header>
+  <!-- 主画布 -->
+  <canvas id="cakeCanvas"></canvas>
 
-  <main>
+  <!-- 顶部祝福标题 -->
+  <div class="header-area">
+    <div class="badge">✨ Special Birthday For You ✨</div>
+    <h1 class="main-title">莹莹姐，生日快乐！🎂✨</h1>
+    <div class="sub-title">愿所念皆所愿 · 岁岁常欢愉 · 万事皆胜意</div>
+    <div class="touch-hint" id="hint">👆 指尖滑动拨动星火 · 点击画布绽放祝福</div>
+  </div>
 
-    <section class="disclaimer">
-      <strong>聲明：</strong><br />
-      本頁內容為個人學習與整理之筆記，僅用於對相關思想與價值觀的理解與記錄，  
-      不代表任何官方立場、組織立場或權威解讀，亦不構成宣傳、號召或指導。
-    </section>
+  <!-- 底部操作按钮 -->
+  <div class="controls-bar">
+    <button class="ctrl-btn" id="btnBlow">吹灭蜡烛 🕯️</button>
+    <button class="ctrl-btn" id="btnWish">许个愿望 ✨</button>
+    <button class="ctrl-btn" id="btnCard">专属贺卡 💌</button>
+    <button class="ctrl-btn" id="btnMusic">播放音乐 🎵</button>
+  </div>
 
-    <section>
-      <h2>學習背景說明</h2>
-      <p>
-        本頁整理內容來源於公開資料與個人閱讀理解，目的在於梳理概念、加深認識，
-        作為個人思想學習與價值觀反思的記錄。
-      </p>
-    </section>
+  <!-- 专属祝福贺卡 -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-card">
+      <div class="card-tag">To: Dearest 莹莹姐</div>
+      <div class="card-title">✨ 生日快乐 ✨</div>
+      <div class="card-body">
+        <p>致温柔而闪耀的莹莹姐：</p>
+        <p>又是一年繁花盛开的生日季。感谢你带来的温暖与欢笑！愿时光格外偏爱于你，眼里总有星河灿烂，心中常有暖阳与春风。</p>
+        <p>新的一岁里，愿你所遇皆美好，所求皆如愿，平安顺遂，永远自在欢喜！💖</p>
+      </div>
+      <button class="btn-close" id="btnCloseModal">收下这份心意 🌸</button>
+    </div>
+  </div>
 
-    <section>
-      <h2>八項價值觀整理（榮）</h2>
-      <ul>
-        <li>以熱愛祖國為榮</li>
-        <li>以服務人民為榮</li>
-        <li>以崇尚科學為榮</li>
-        <li>以辛勤勞動為榮</li>
-        <li>以團結互助為榮</li>
-        <li>以誠實守信為榮</li>
-        <li>以遵紀守法為榮</li>
-        <li>以艱苦奮鬥為榮</li>
-      </ul>
-    </section>
+  <!-- 提示条 -->
+  <div class="toast" id="toast"></div>
 
-    <section>
-      <h2>八項行為反思（恥）</h2>
-      <ul>
-        <li>以危害祖國為恥</li>
-        <li>以背離人民為恥</li>
-        <li>以愚昧無知為恥</li>
-        <li>以好逸惡勞為恥</li>
-        <li>以損人利己為恥</li>
-        <li>以見利忘義為恥</li>
-        <li>以違法亂紀為恥</li>
-        <li>以驕奢淫逸為恥</li>
-      </ul>
-    </section>
+  <script>
+    /**
+     * 莹莹姐定制交互粒子生日蛋糕系统
+     * 100% 纯原生 JavaScript / Canvas / Web Audio API
+     */
 
-    <section>
-      <h2>個人學習備註</h2>
-      <p>
-        本頁僅作為學習過程中的整理與備忘，內容表述偏向概念記錄，
-        不涉及宣傳推廣、教育指引或行為要求。
-      </p>
-    </section>
+    const canvas = document.getElementById('cakeCanvas');
+    const ctx = canvas.getContext('2d');
+    const toast = document.getElementById('toast');
+    let width = 0;
+    let height = 0;
+    let dpr = 1;
 
-  </main>
+    function resize() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      ctx.scale(dpr, dpr);
+      buildCakeStructure();
+    }
+    window.addEventListener('resize', resize);
 
-  <footer>
-    個人學習筆記頁面 ｜ 僅供閱讀與理解參考
-  </footer>
+    // 交互指针（支持多触点与平滑排斥）
+    const touchPointers = [];
+    function updateTouchPointers(e) {
+      touchPointers.length = 0;
+      if (e.touches && e.touches.length > 0) {
+        for (let i = 0; i < e.touches.length; i++) {
+          const t = e.touches[i];
+          touchPointers.push({ x: t.clientX, y: t.clientY, radius: 65 });
+        }
+      }
+    }
 
+    window.addEventListener('touchstart', (e) => {
+      updateTouchPointers(e);
+      document.getElementById('hint').style.opacity = '0.3';
+    }, { passive: true });
+    window.addEventListener('touchmove', updateTouchPointers, { passive: true });
+    window.addEventListener('touchend', (e) => {
+      updateTouchPointers(e);
+    }, { passive: true });
+
+    // 鼠标支持
+    window.addEventListener('mousemove', (e) => {
+      touchPointers.length = 0;
+      touchPointers.push({ x: e.clientX, y: e.clientY, radius: 75 });
+    });
+    window.addEventListener('mouseleave', () => {
+      touchPointers.length = 0;
+    });
+
+    // 点击在画布上散落星芒与爱心
+    window.addEventListener('click', (e) => {
+      // 避免触发到底部按钮
+      if (e.target.closest('.controls-bar') || e.target.closest('.modal-card')) return;
+      spawnClickCelebration(e.clientX, e.clientY);
+    });
+
+    function showToast(msg) {
+      toast.innerText = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2600);
+    }
+
+    // --- 粒子系统与实体管理 ---
+    const cakeParticles = [];
+    const candleFlames = [];
+    const smokeParticles = [];
+    const fireworkParticles = [];
+    const celebrationParticles = [];
+    const ambientStars = [];
+
+    let isCandlesLit = true;
+    let isWishing = false;
+    let wishAngle = 0;
+
+    // 粒子颜色色板（香槟金、玫瑰粉、珍珠白、草莓红、淡紫）
+    const COLORS = {
+      plate: ['#fde047', '#facc15', '#ca8a04', '#fef08a'],
+      tier1: ['#f472b6', '#fb7185', '#fda4af', '#f43f5e', '#fff1f2'],
+      tier2: ['#fbcfe8', '#e9d5ff', '#c084fc', '#f472b6', '#fed7aa'],
+      tier3: ['#ffffff', '#fff0f5', '#fed7aa', '#fbcfe8', '#fecdd3'],
+      cream: ['#ffffff', '#fef3c7', '#fed7aa', '#fde68a'],
+      strawberry: ['#e11d48', '#be123c', '#f43f5e'],
+      candleBody: ['#ffe4e6', '#fbcfe8', '#f472b6', '#ffffff']
+    };
+
+    function randomChoice(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    // 蛋糕粒子模型类 (基于 Hooke's Law 弹簧阻尼模型)
+    class CakeParticle {
+      constructor(tx, ty, color, radius) {
+        this.tx = tx; // 目标位置
+        this.ty = ty;
+        this.x = tx + (Math.random() - 0.5) * (width * 0.8);
+        this.y = ty + (Math.random() - 0.5) * 600 - 150;
+        this.vx = (Math.random() - 0.5) * 4;
+        this.vy = (Math.random() - 0.5) * 4;
+        this.color = color;
+        this.radius = radius;
+        this.spring = 0.038;
+        this.friction = 0.87;
+        this.phase = Math.random() * Math.PI * 2;
+      }
+
+      update() {
+        this.phase += 0.03;
+        let destX = this.tx;
+        let destY = this.ty + Math.sin(this.phase) * 0.6; // 微弱呼吸
+
+        if (isWishing) {
+          // 愿望旋转涡旋引力
+          const centerX = width / 2;
+          const centerY = height * 0.58;
+          const dx = centerX - this.x;
+          const dy = centerY - this.y;
+          const dist = Math.hypot(dx, dy) || 1;
+          const angle = Math.atan2(dy, dx);
+          this.vx += Math.cos(angle + Math.PI / 2.1) * 3.2 + (dx / dist) * 1.6;
+          this.vy += Math.sin(angle + Math.PI / 2.1) * 3.2 + (dy / dist) * 1.6;
+        } else {
+          // 弹簧回弹
+          const dx = destX - this.x;
+          const dy = destY - this.y;
+          this.vx += dx * this.spring;
+          this.vy += dy * this.spring;
+        }
+
+        // 手指/鼠标排斥场
+        for (let p of touchPointers) {
+          const pdx = this.x - p.x;
+          const pdy = this.y - p.y;
+          const pdist = Math.hypot(pdx, pdy);
+          if (pdist < p.radius && pdist > 0.001) {
+            const force = (1 - pdist / p.radius) * 12;
+            const angle = Math.atan2(pdy, pdx);
+            this.vx += Math.cos(angle) * force;
+            this.vy += Math.sin(angle) * force;
+          }
+        }
+
+        this.vx *= this.friction;
+        this.vy *= this.friction;
+        this.x += this.vx;
+        this.y += this.vy;
+      }
+
+      draw() {
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    // 独立烛台与火焰模拟系统
+    class CandleFlame {
+      constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.particles = [];
+        this.tick = Math.random() * 100;
+      }
+
+      update() {
+        this.tick += 0.1;
+        if (isCandlesLit) {
+          // 产生火苗粒子
+          for (let i = 0; i < 2; i++) {
+            this.particles.push({
+              x: this.x + (Math.random() - 0.5) * 3,
+              y: this.y,
+              vx: (Math.random() - 0.5) * 0.7 + Math.sin(this.tick) * 0.35,
+              vy: -Math.random() * 2.2 - 1.2,
+              size: Math.random() * 4.5 + 2,
+              life: 1.0,
+              decay: Math.random() * 0.045 + 0.03,
+              color: randomChoice(['#ffffff', '#fef08a', '#f59e0b', '#ef4444'])
+            });
+          }
+        }
+
+        for (let i = this.particles.length - 1; i >= 0; i--) {
+          const p = this.particles[i];
+          p.x += p.vx;
+          p.y += p.vy;
+          p.size *= 0.94;
+          p.life -= p.decay;
+          if (p.life <= 0 || p.size < 0.2) {
+            this.particles.splice(i, 1);
+          }
+        }
+      }
+
+      draw() {
+        if (!isCandlesLit && this.particles.length === 0) return;
+
+        ctx.save();
+        ctx.globalCompositeOperation = 'screen';
+
+        // 柔和外光晕
+        if (isCandlesLit) {
+          const halo = ctx.createRadialGradient(this.x, this.y - 8, 0, this.x, this.y - 8, 24);
+          halo.addColorStop(0, 'rgba(254, 240, 138, 0.5)');
+          halo.addColorStop(0.5, 'rgba(245, 158, 11, 0.2)');
+          halo.addColorStop(1, 'rgba(245, 158, 11, 0)');
+          ctx.fillStyle = halo;
+          ctx.beginPath();
+          ctx.arc(this.x, this.y - 8, 24, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        for (const p of this.particles) {
+          ctx.fillStyle = p.color;
+          ctx.globalAlpha = p.life * 0.85;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+
+      extinguish() {
+        // 熄灭升起青烟
+        for (let i = 0; i < 22; i++) {
+          smokeParticles.push({
+            x: this.x,
+            y: this.y - 5,
+            vx: (Math.random() - 0.5) * 1.2,
+            vy: -Math.random() * 1.8 - 0.8,
+            size: Math.random() * 3 + 2,
+            alpha: 0.65,
+            decay: Math.random() * 0.012 + 0.008
+          });
+        }
+      }
+    }
+
+    // 烟花粒子系统
+    class Firework {
+      constructor(x, y, color) {
+        this.x = x;
+        this.y = y;
+        const angle = Math.random() * Math.PI * 2;
+        const speed = Math.random() * 6.5 + 2.5;
+        this.vx = Math.cos(angle) * speed;
+        this.vy = Math.sin(angle) * speed;
+        this.color = color;
+        this.alpha = 1;
+        this.decay = Math.random() * 0.018 + 0.012;
+        this.size = Math.random() * 2.6 + 1.2;
+      }
+      update() {
+        this.vx *= 0.96;
+        this.vy *= 0.96;
+        this.vy += 0.08; // 重力
+        this.x += this.vx;
+        this.y += this.vy;
+        this.alpha -= this.decay;
+      }
+      draw() {
+        if (this.alpha <= 0) return;
+        ctx.save();
+        ctx.globalCompositeOperation = 'lighter';
+        ctx.globalAlpha = Math.max(0, this.alpha);
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    // 发射全屏彩色烟花群
+    function launchFireworksBurst() {
+      const colors = ['#f43f5e', '#ec4899', '#a855f7', '#38bdf8', '#facc15', '#ffffff', '#4ade80'];
+      const bursts = 7;
+      for (let b = 0; b < bursts; b++) {
+        setTimeout(() => {
+          const fx = width * 0.15 + Math.random() * width * 0.7;
+          const fy = height * 0.15 + Math.random() * height * 0.35;
+          const col = randomChoice(colors);
+          for (let i = 0; i < 65; i++) {
+            fireworkParticles.push(new Firework(fx, fy, col));
+          }
+        }, b * 220);
+      }
+    }
+
+    // 点击画布溅射闪亮微粒与爱心
+    function spawnClickCelebration(x, y) {
+      const count = 10;
+      for (let i = 0; i < count; i++) {
+        celebrationParticles.push({
+          x: x,
+          y: y,
+          vx: (Math.random() - 0.5) * 5,
+          vy: (Math.random() - 0.5) * 5 - 1.5,
+          size: Math.random() * 6 + 4,
+          isHeart: Math.random() > 0.45,
+          color: randomChoice(['#fda4af', '#f43f5e', '#fef08a', '#c084fc', '#ffffff']),
+          alpha: 1,
+          decay: 0.02 + Math.random() * 0.015,
+          rot: Math.random() * Math.PI * 2
+        });
+      }
+    }
+
+    // --- 构建多层 3D 蛋糕参数化几何点阵 ---
+    function buildCakeStructure() {
+      cakeParticles.length = 0;
+      candleFlames.length = 0;
+
+      // 响应式比例（手机竖屏动态自适应）
+      const isMobile = width < 600;
+      const scale = Math.min(width, height) / (isMobile ? 480 : 660);
+      const cx = width / 2;
+      const cy = height * 0.62;
+
+      function addEllipseRing(rx, ry, y, count, colorArr, size = 1.9) {
+        for (let i = 0; i < count; i++) {
+          const rad = (i / count) * Math.PI * 2;
+          const px = cx + rx * Math.cos(rad);
+          const py = y + ry * Math.sin(rad);
+          cakeParticles.push(new CakeParticle(px, py, randomChoice(colorArr), size * scale));
+        }
+      }
+
+      function addFilledEllipse(rx, ry, y, count, colorArr, size = 1.8) {
+        for (let i = 0; i < count; i++) {
+          const r = Math.sqrt(Math.random());
+          const rad = Math.random() * Math.PI * 2;
+          const px = cx + rx * r * Math.cos(rad);
+          const py = y + ry * r * Math.sin(rad);
+          cakeParticles.push(new CakeParticle(px, py, randomChoice(colorArr), size * scale));
+        }
+      }
+
+      function addCylinder(rx, ry, topY, h, rings, stepCount, colorArr, size = 1.8) {
+        for (let l = 0; l <= rings; l++) {
+          const currY = topY + (l / rings) * h;
+          addEllipseRing(rx, ry, currY, stepCount, colorArr, size);
+        }
+      }
+
+      // 1. 金色托盘
+      const plateRx = 195 * scale;
+      const plateRy = 55 * scale;
+      const plateY = cy + 70 * scale;
+      addFilledEllipse(plateRx, plateRy, plateY, 200, COLORS.plate, 2.0);
+      addEllipseRing(plateRx + 6 * scale, plateRy + 2 * scale, plateY, 80, ['#ffffff', '#fde047'], 2.4);
+
+      // 2. 底层蛋糕 (浪漫粉系)
+      const t1Rx = 150 * scale;
+      const t1Ry = 42 * scale;
+      const t1H = 55 * scale;
+      const t1TopY = plateY - t1H;
+      addCylinder(t1Rx, t1Ry, t1TopY, t1H, 10, 75, COLORS.tier1, 1.9);
+      addFilledEllipse(t1Rx, t1Ry, t1TopY, 220, COLORS.tier1, 1.9);
+      addEllipseRing(t1Rx, t1Ry, t1TopY, 55, COLORS.cream, 2.5); // 奶油花边
+
+      // 3. 中层蛋糕 (香槟紫梦幻层)
+      const t2Rx = 105 * scale;
+      const t2Ry = 30 * scale;
+      const t2H = 46 * scale;
+      const t2TopY = t1TopY - t2H;
+      addCylinder(t2Rx, t2Ry, t2TopY, t2H, 8, 60, COLORS.tier2, 1.8);
+      addFilledEllipse(t2Rx, t2Ry, t2TopY, 170, COLORS.tier2, 1.8);
+      addEllipseRing(t2Rx, t2Ry, t2TopY, 45, COLORS.cream, 2.4);
+
+      // 4. 顶层蛋糕 (纯白羊绒奶油层)
+      const t3Rx = 65 * scale;
+      const t3Ry = 19 * scale;
+      const t3H = 38 * scale;
+      const t3TopY = t2TopY - t3H;
+      addCylinder(t3Rx, t3Ry, t3TopY, t3H, 7, 48, COLORS.tier3, 1.7);
+      addFilledEllipse(t3Rx, t3Ry, t3TopY, 130, COLORS.tier3, 1.7);
+      addEllipseRing(t3Rx, t3Ry, t3TopY, 36, COLORS.cream, 2.2);
+
+      // 5. 顶层草莓/水果点缀
+      for (let s = 0; s < 6; s++) {
+        const sRad = (s / 6) * Math.PI * 2;
+        const sx = cx + (t3Rx * 0.7) * Math.cos(sRad);
+        const sy = t3TopY + (t3Ry * 0.7) * Math.sin(sRad);
+        for (let k = 0; k < 5; k++) {
+          cakeParticles.push(new CakeParticle(
+            sx + (Math.random() - 0.5) * 6 * scale,
+            sy + (Math.random() - 0.5) * 5 * scale,
+            randomChoice(COLORS.strawberry),
+            2.2 * scale
+          ));
+        }
+      }
+
+      // 6. 5 根生日烛台与烛火
+      const candleOffsets = [
+        { x: 0, y: 0, h: 36 * scale },
+        { x: -30 * scale, y: -2 * scale, h: 30 * scale },
+        { x: 30 * scale, y: -2 * scale, h: 30 * scale },
+        { x: -50 * scale, y: 3 * scale, h: 25 * scale },
+        { x: 50 * scale, y: 3 * scale, h: 25 * scale }
+      ];
+
+      candleOffsets.forEach((cand) => {
+        const candX = cx + cand.x;
+        const candBaseY = t3TopY + cand.y;
+        const candTopY = candBaseY - cand.h;
+
+        // 蜡烛条状粒子
+        const steps = 14;
+        for (let i = 0; i <= steps; i++) {
+          const cyPos = candBaseY - (i / steps) * cand.h;
+          cakeParticles.push(new CakeParticle(candX, cyPos, randomChoice(COLORS.candleBody), 1.8 * scale));
+          cakeParticles.push(new CakeParticle(candX - 1.2 * scale, cyPos, '#ffffff', 1.4 * scale));
+          cakeParticles.push(new CakeParticle(candX + 1.2 * scale, cyPos, '#fbcfe8', 1.4 * scale));
+        }
+
+        // 烛芯
+        cakeParticles.push(new CakeParticle(candX, candTopY - 2 * scale, '#374151', 1.3 * scale));
+
+        // 烛火实例
+        candleFlames.push(new CandleFlame(candX, candTopY - 4 * scale));
+      });
+    }
+
+    // 空间背景星尘微光
+    function initAmbientStars() {
+      ambientStars.length = 0;
+      for (let i = 0; i < 70; i++) {
+        ambientStars.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          size: Math.random() * 1.5 + 0.4,
+          alpha: Math.random() * 0.6 + 0.2,
+          speed: Math.random() * 0.03 + 0.01,
+          phase: Math.random() * Math.PI * 2
+        });
+      }
+    }
+
+    // --- Web Audio API 水晶八音盒生日歌纯合成器 ---
+    class PureBoxSynthesizer {
+      constructor() {
+        this.ctx = null;
+        this.isPlaying = false;
+        this.currentStep = 0;
+        this.timer = null;
+
+        // 《祝你生日快乐》经典简谱频率 (C调清澈八音盒)
+        const C4 = 261.63, D4 = 293.66, E4 = 329.63, F4 = 349.23, G4 = 392.00, A4 = 440.00, B4 = 493.88;
+        const C5 = 523.25, D5 = 587.33, E5 = 659.25, F5 = 698.46, G5 = 783.99;
+
+        this.score = [
+          { f: G4, d: 280 }, { f: G4, d: 220 }, { f: A4, d: 480 }, { f: G4, d: 480 }, { f: C5, d: 480 }, { f: B4, d: 900 },
+          { f: G4, d: 280 }, { f: G4, d: 220 }, { f: A4, d: 480 }, { f: G4, d: 480 }, { f: D5, d: 480 }, { f: C5, d: 900 },
+          { f: G4, d: 280 }, { f: G4, d: 220 }, { f: G5, d: 480 }, { f: E5, d: 480 }, { f: C5, d: 480 }, { f: B4, d: 480 }, { f: A4, d: 750 },
+          { f: F5, d: 280 }, { f: F5, d: 220 }, { f: E5, d: 480 }, { f: C5, d: 480 }, { f: D5, d: 480 }, { f: C5, d: 1100 }
+        ];
+      }
+
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AudioContext();
+        }
+        if (this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+
+      playTone(freq, dur) {
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        
+        // 振荡器 1: 纯正弦波
+        const osc1 = this.ctx.createOscillator();
+        osc1.type = 'sine';
+        osc1.frequency.setValueAtTime(freq, now);
+
+        // 振荡器 2: 轻柔泛音
+        const osc2 = this.ctx.createOscillator();
+        osc2.type = 'triangle';
+        osc2.frequency.setValueAtTime(freq * 2, now);
+
+        // 增益音量包络
+        const gain = this.ctx.createGain();
+        gain.gain.setValueAtTime(0.0001, now);
+        gain.gain.linearRampToValueAtTime(0.28, now + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + (dur / 1000) * 1.6);
+
+        // 低通滤波器
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(2600, now);
+
+        osc1.connect(filter);
+        osc2.connect(filter);
+        filter.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc1.start(now);
+        osc2.start(now);
+        osc1.stop(now + (dur / 1000) * 1.6);
+        osc2.stop(now + (dur / 1000) * 1.6);
+      }
+
+      step() {
+        if (!this.isPlaying) return;
+        const note = this.score[this.currentStep];
+        this.playTone(note.f, note.d);
+        this.currentStep = (this.currentStep + 1) % this.score.length;
+        this.timer = setTimeout(() => this.step(), note.d + 120);
+      }
+
+      toggle() {
+        this.init();
+        if (this.isPlaying) {
+          this.stop();
+          return false;
+        } else {
+          this.isPlaying = true;
+          this.currentStep = 0;
+          this.step();
+          return true;
+        }
+      }
+
+      stop() {
+        this.isPlaying = false;
+        if (this.timer) clearTimeout(this.timer);
+      }
+    }
+
+    const musicBox = new PureBoxSynthesizer();
+
+    // --- 界面按钮互动绑定 ---
+    const btnBlow = document.getElementById('btnBlow');
+    const btnWish = document.getElementById('btnWish');
+    const btnCard = document.getElementById('btnCard');
+    const btnMusic = document.getElementById('btnMusic');
+    const modalOverlay = document.getElementById('modalOverlay');
+    const btnCloseModal = document.getElementById('btnCloseModal');
+
+    // 吹灭/点亮蜡烛
+    btnBlow.addEventListener('click', () => {
+      if (isCandlesLit) {
+        isCandlesLit = false;
+        btnBlow.innerText = '点燃蜡烛 🕯️';
+        candleFlames.forEach(f => f.extinguish());
+        launchFireworksBurst();
+        showToast('烛光轻许星河，愿莹莹姐岁岁平安！✨');
+      } else {
+        isCandlesLit = true;
+        btnBlow.innerText = '吹灭蜡烛 🕯️';
+        showToast('烛光已重新点亮！🔥');
+      }
+    });
+
+    // 许个愿望
+    btnWish.addEventListener('click', () => {
+      if (isWishing) return;
+      isWishing = true;
+      btnWish.classList.add('active');
+      showToast('愿望星流正在聚拢汇聚...💫');
+
+      setTimeout(() => {
+        isWishing = false;
+        btnWish.classList.remove('active');
+        // 核心爆发出大量爱心
+        for (let i = 0; i < 35; i++) {
+          spawnClickCelebration(width / 2 + (Math.random() - 0.5) * 60, height * 0.58 + (Math.random() - 0.5) * 60);
+        }
+        showToast('愿望已送达浩瀚星空，万事胜意！💖');
+      }, 3000);
+    });
+
+    // 专属贺卡
+    btnCard.addEventListener('click', () => {
+      modalOverlay.classList.add('open');
+    });
+    btnCloseModal.addEventListener('click', () => {
+      modalOverlay.classList.remove('open');
+      launchFireworksBurst();
+    });
+    modalOverlay.addEventListener('click', (e) => {
+      if (e.target === modalOverlay) modalOverlay.classList.remove('open');
+    });
+
+    // 音乐开关
+    btnMusic.addEventListener('click', () => {
+      const playing = musicBox.toggle();
+      if (playing) {
+        btnMusic.classList.add('active');
+        btnMusic.innerText = '暂停音乐 ⏸️';
+        showToast('正在播放《生日快乐》纯澈八音盒 🎵');
+      } else {
+        btnMusic.classList.remove('active');
+        btnMusic.innerText = '播放音乐 🎵';
+        showToast('音乐已暂停 🌙');
+      }
+    });
+
+    // --- 主渲染动画引擎 ---
+    function animate() {
+      // 柔和夜空清屏（保留微弱残影拖尾）
+      ctx.fillStyle = 'rgba(7, 2, 14, 0.28)';
+      ctx.fillRect(0, 0, width, height);
+
+      // 1. 背景星光
+      ctx.save();
+      for (const s of ambientStars) {
+        s.phase += s.speed;
+        const a = s.alpha + Math.sin(s.phase) * 0.25;
+        ctx.globalAlpha = Math.max(0.1, a);
+        ctx.fillStyle = '#fce7f3';
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+
+      // 2. 蛋糕本体粒子更新与绘制
+      for (let i = 0; i < cakeParticles.length; i++) {
+        const p = cakeParticles[i];
+        p.update();
+        p.draw();
+      }
+
+      // 3. 烛火系统
+      for (let i = 0; i < candleFlames.length; i++) {
+        const f = candleFlames[i];
+        f.update();
+        f.draw();
+      }
+
+      // 4. 青烟粒子
+      for (let i = smokeParticles.length - 1; i >= 0; i--) {
+        const sp = smokeParticles[i];
+        sp.x += sp.vx;
+        sp.y += sp.vy;
+        sp.size += 0.12;
+        sp.alpha -= sp.decay;
+        if (sp.alpha <= 0) {
+          smokeParticles.splice(i, 1);
+        } else {
+          ctx.save();
+          ctx.fillStyle = `rgba(226, 232, 240, ${sp.alpha})`;
+          ctx.beginPath();
+          ctx.arc(sp.x, sp.y, sp.size, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        }
+      }
+
+      // 5. 烟花粒子
+      for (let i = fireworkParticles.length - 1; i >= 0; i--) {
+        const fp = fireworkParticles[i];
+        fp.update();
+        fp.draw();
+        if (fp.alpha <= 0) fireworkParticles.splice(i, 1);
+      }
+
+      // 6. 点击庆祝微粒 (爱心与星芒)
+      for (let i = celebrationParticles.length - 1; i >= 0; i--) {
+        const cp = celebrationParticles[i];
+        cp.x += cp.vx;
+        cp.y += cp.vy;
+        cp.vy += 0.05;
+        cp.alpha -= cp.decay;
+        if (cp.alpha <= 0) {
+          celebrationParticles.splice(i, 1);
+        } else {
+          ctx.save();
+          ctx.globalAlpha = Math.max(0, cp.alpha);
+          ctx.fillStyle = cp.color;
+          ctx.translate(cp.x, cp.y);
+          if (cp.isHeart) {
+            // 绘制小爱心
+            const s = cp.size * 0.1;
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.bezierCurveTo(-5 * s, -6 * s, -11 * s, 0, 0, 10 * s);
+            ctx.bezierCurveTo(11 * s, 0, 5 * s, -6 * s, 0, 0);
+            ctx.fill();
+          } else {
+            // 四角闪烁星芒
+            const r = cp.size * 0.5;
+            ctx.beginPath();
+            for (let k = 0; k < 4; k++) {
+              ctx.lineTo(Math.cos(k * Math.PI / 2) * r, Math.sin(k * Math.PI / 2) * r);
+              ctx.lineTo(Math.cos(k * Math.PI / 2 + Math.PI / 4) * (r * 0.3), Math.sin(k * Math.PI / 2 + Math.PI / 4) * (r * 0.3));
+            }
+            ctx.closePath();
+            ctx.fill();
+          }
+          ctx.restore();
+        }
+      }
+
+      requestAnimationFrame(animate);
+    }
+
+    // 初始化启动
+    window.onload = function() {
+      resize();
+      initAmbientStars();
+      animate();
+    };
+  </script>
 </body>
 </html>
-
+```
